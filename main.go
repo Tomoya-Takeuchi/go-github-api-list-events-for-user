@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -39,6 +40,16 @@ func fetchGitHubUserEvents(username, token string) string {
 	return string(body)
 }
 
+func formatDate(dateStr string) string {
+	layout := time.RFC3339
+	t, err := time.Parse(layout, dateStr)
+	if err != nil {
+		fmt.Println("Error parsing date:", err)
+		return ""
+	}
+	return t.Format("2006-01-02") // YYYY-MM-DD形式で出力
+}
+
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -55,6 +66,7 @@ func main() {
 	}
 
 	for _, event := range events {
-		fmt.Printf("Event ID: %s, Type: %s\n", event.ID, event.Type)
+		fmt.Printf("Event ID: %s, Type: %s, Created At: %s\n", event.ID, event.Type, formatDate(event.CreatedAt))
+
 	}
 }
