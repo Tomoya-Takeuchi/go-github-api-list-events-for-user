@@ -12,7 +12,7 @@ import (
 )
 
 func fetchGitHubUserEvents(username, token string) string {
-	url := fmt.Sprintf("https://api.github.com/users/%s/events/public?per_page=2", username)
+	url := fmt.Sprintf("https://api.github.com/users/%s/events/public?per_page=3", username)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
@@ -47,7 +47,15 @@ func formatDate(dateStr string) string {
 		fmt.Println("Error parsing date:", err)
 		return ""
 	}
-	return t.Format("2006-01-02") // YYYY-MM-DD形式で出力
+
+	location, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		fmt.Println("Error loading location:", err)
+		return ""
+	}
+
+	tokyoTime := t.In(location)
+	return tokyoTime.Format("2006-01-02 15:04:05")
 }
 
 func main() {
@@ -67,6 +75,5 @@ func main() {
 
 	for _, event := range events {
 		fmt.Printf("Event ID: %s, Type: %s, Created At: %s\n", event.ID, event.Type, formatDate(event.CreatedAt))
-
 	}
 }
